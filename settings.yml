@@ -1,0 +1,36 @@
+---
+name: Telegram Subscribers
+description: Public channel subscriber trends
+strategy: static
+refresh_interval: 60
+refresh_interval_floor: 60
+static_data: '{}'
+serverless_language: python
+framework_version: '3.4.0'
+no_screen_padding: 'no'
+dark_mode: 'no'
+custom_fields:
+  - keyname: channel
+    field_type: string
+    name: Public Telegram channel
+    description: Enter a username, @username, or t.me channel address.
+    description-ru: Введите имя канала, @username или адрес канала в t.me.
+    placeholder: '@telegram'
+    maxlength: 100
+  - keyname: author_bio
+    field_type: author_bio
+    name: About This Plugin
+    category: analytics,kpi
+    github_url: https://github.com/lerston/trmnl-telegram-subscribers
+    description: >-
+      Keep an eye on any public Telegram channel with a quiet subscriber dashboard
+      on your TRMNL. Enter the channel username or its t.me address to see the current
+      subscriber count, changes over the last day and week, and a graph covering up
+      to 30 days. No Telegram bot, API key, account login, or channel administrator
+      access is required. History starts when you install the recipe and is stored
+      separately for your installation. The recipe reads Telegram's public channel
+      card when your device requests an update, at most once an hour. If Telegram is temporarily unavailable, it keeps the last
+      successful reading and shows when it was updated. Private channels, groups,
+      and personal accounts are not supported. This recipe is independent and is
+      not affiliated with Telegram. Public page changes may occasionally require
+      a recipe update. Contact the author through the linked GitHub repository for support.

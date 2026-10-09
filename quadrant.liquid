@@ -1,0 +1,6 @@
+<div class="layout layout--col layout--stretch"><div class="flex flex--col flex--between w--full h--full">
+  <div class="flex flex--col flex--left gap--small"><span class="title title--small" data-clamp="1">{{ channel_name | escape }}</span><span class="description">@{{ channel | escape }}</span></div>
+  <div class="flex flex--row flex--between w--full"><div class="flex flex--col flex--left"><span class="value value--tnums">{{ subscribers_display }}</span><span class="label">Subscribers</span></div><div class="flex flex--col flex--left"><span class="value value--small value--tnums">{{ delta_day_display }}</span><span class="label">24 hours</span></div></div>
+  {% if status != 'ok' %}<span class="description">{{ status | capitalize }}</span>{% endif %}
+</div></div>
+{% render "subscribers_footer", updated_display: updated_display %}

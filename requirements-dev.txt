@@ -1,0 +1,2 @@
+python-liquid==2.3.1
+tzdata==2026.4

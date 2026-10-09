@@ -1,0 +1,30 @@
+{% template subscribers_chart %}
+  {% if chart.segments.size > 0 %}
+    <div class="w--full">
+      <div class="flex flex--row flex--between w--full">
+        <span class="label">Subscribers · {{ history_days }} days</span>
+        <span class="description">{{ chart.minimum | number_with_delimiter }}–{{ chart.maximum | number_with_delimiter }}</span>
+      </div>
+      <svg viewBox="0 0 560 152" width="100%" height="128" preserveAspectRatio="none" role="img" aria-label="Subscriber history" class="image image--adaptive w--full h--32 lg:h--64">
+        <line x1="12" y1="20" x2="548" y2="20" stroke="black" stroke-width="1" stroke-dasharray="2 6" />
+        <line x1="12" y1="76" x2="548" y2="76" stroke="black" stroke-width="1" stroke-dasharray="2 6" />
+        <line x1="12" y1="132" x2="548" y2="132" stroke="black" stroke-width="1" stroke-dasharray="2 6" />
+        {% for segment in chart.segments %}<polyline points="{{ segment }}" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />{% endfor %}
+        {% for point in chart.points %}<circle cx="{{ point.x }}" cy="{{ point.y }}" r="2.5" fill="black" />{% endfor %}
+      </svg>
+      <div class="flex flex--row flex--between w--full">
+        <span class="description">{{ chart.first_day }}</span>
+        <span class="description">{{ chart.last_day }}</span>
+      </div>
+    </div>
+  {% else %}
+    <div class="flex flex--row flex--center h--32"><span class="description">History starts with your first update. The graph appears on day two.</span></div>
+  {% endif %}
+{% endtemplate %}
+{% template subscribers_footer %}
+  <div class="title_bar">
+    <svg class="image image--adaptive" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18V6M3 18h18M6 14l4-4 4 2 6-7" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    <span class="title">Telegram Subscribers</span>
+    <span class="instance">{% if updated_display != blank %}{{ updated_display | escape }}{% else %}Awaiting data{% endif %}</span>
+  </div>
+{% endtemplate %}
