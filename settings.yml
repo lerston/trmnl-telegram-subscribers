@@ -14,7 +14,6 @@ custom_fields:
     field_type: string
     name: Public Telegram channel
     description: Enter a username, @username, or t.me channel address.
-    description-ru: Введите имя канала, @username или адрес канала в t.me.
     placeholder: '@telegram'
     maxlength: 100
   - keyname: author_bio

@@ -1,10 +1,9 @@
-## Изменение
+## Summary
 
-## Проверка
+## Validation
 
-- Локальные тесты и сборка:
-- Облачный TRMNL:
-- Физическое устройство:
-- Diff проверен на секреты и реальные данные:
+- Local tests and build:
+- TRMNL server preview (if applicable):
+- Physical device (if applicable):
 
-## Ограничения
+## Limitations

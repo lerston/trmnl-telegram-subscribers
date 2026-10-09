@@ -100,7 +100,7 @@ class TelegramCounterTests(unittest.TestCase):
     def test_bounded_month_history_with_large_channel_and_long_name(self):
         state = {}
         for hour in range(35 * 24):
-            result = plugin.process(input_for(state=state), lambda _, h=hour: {"count": 9_000_000 + h, "name": "Я" * 128}, BASE + hour * plugin.HOUR)
+            result = plugin.process(input_for(state=state), lambda _, h=hour: {"count": 9_000_000 + h, "name": "\u042f" * 128}, BASE + hour * plugin.HOUR)
             state = result["trmnl_state"]
         self.assertLessEqual(len(state["hours"]), plugin.MAX_HOURS)
         self.assertLessEqual(len(state["days"]), plugin.MAX_DAYS)
