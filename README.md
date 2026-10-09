@@ -1,72 +1,57 @@
-# Telegram Subscribers для TRMNL
+# Telegram Subscribers for TRMNL
 
-Тестовый проект Recipe: число подписчиков публичного Telegram-канала и график за 30 дней. Пользователь вводит только `@username` или адрес канала. Бот, API-ключ, вход в Telegram и права администратора не нужны.
+Track a public Telegram channel's subscriber count and history on your TRMNL. Enter a channel username or `t.me` address. No bot, API key, Telegram login, or administrator access is required.
 
-**Статус: testing.** Проект ещё не опубликован в каталоге TRMNL. Изменения проходят через pull request; установка ZIP предназначена для проверки Private Plugin.
+**Status: experimental.** The plugin is being tested and is not available in the TRMNL catalog. Source code is currently on the [testing branch](https://github.com/lerston/trmnl-telegram-subscribers/tree/codex/standalone), in [draft PR #1](https://github.com/lerston/trmnl-telegram-subscribers/pull/1).
 
-Исходники для проверки находятся в [ветке codex/standalone](https://github.com/lerston/trmnl-telegram-subscribers/tree/codex/standalone).
+## Features
 
-## Источник и история
+- Current subscriber count and changes over 24 hours and 7 days.
+- Up to 30 days of history, saved separately for each installation.
+- Four layouts with newspaper typography and a dithered chart in the full and vertical layouts.
+- Date and time of the last successful reading in your TRMNL time zone.
+- Last known count retained when Telegram is temporarily unavailable.
 
-Плагин читает публичную карточку `https://t.me/<username>`. Число берётся только из блока `tgme_page_extra` с подписью `subscribers`. Группы, аккаунты пользователей, приватные каналы, округлённые значения и страницы без счётчика не принимаются за канал с нулём подписчиков.
+## Installation for testing
 
-TRMNL Serverless выполняет запрос и разбор HTML; Saved State хранит снимки внутри каждой установки. История начинается после установки и не загружается задним числом. Смена канала начинает новую историю. При временной ошибке отображаются последнее успешное значение и его время, без добавления ложной точки на график.
+Use Python 3.12 or 3.13 to build the import archive:
 
-## Состав
+```sh
+git clone --branch codex/standalone https://github.com/lerston/trmnl-telegram-subscribers.git
+cd trmnl-telegram-subscribers
+python -m venv .venv
+```
 
-- `transform.py` — загрузка карточки, нормализация адреса, точный счётчик и ограниченная история;
-- `settings.yml` — настройки Recipe и поле канала;
-- `shared.liquid` и четыре шаблона — экран и график для всех размеров;
-- `test_transform.py` — проверки вымышленных карточек, истории и отказов;
-- `build.py` — ZIP для импорта и preview на вымышленных данных;
-- `icon.svg` — собственная иконка счётчика для каталога.
-
-## Проверка и сборка
+Activate the environment with `.venv\Scripts\Activate.ps1` on Windows or `source .venv/bin/activate` on macOS/Linux, then run:
 
 ```sh
 python -m pip install -r requirements-dev.txt
-python -m unittest discover -s . -p "test_*.py"
 python build.py
 ```
 
-Команды выполняются из корня этого репозитория на Python 3.12 или 3.13. Для изолированного окружения сначала создайте venv: `python -m venv .venv`. На Windows используйте `.venv\Scripts\python.exe`, на Linux/macOS — `.venv/bin/python` вместо `python`.
+1. Import the ZIP from `dist/` as a Private Plugin in TRMNL.
+2. Check that Serverless uses Python and contains the code from `transform.py`. If the importer leaves it empty, paste the file into the Serverless editor.
+3. Set **Public Telegram channel** to a username, `@username`, or `https://t.me/username`.
+4. Refresh the plugin and check the server preview before adding it to your playlist.
 
-Результаты находятся в `dist/`: импортируемый ZIP и HTML preview. Сборка требует `python-liquid`, тесты используют стандартную библиотеку Python и базу часовых поясов `tzdata` для Windows. Версии зависимостей закреплены в `requirements-dev.txt`. Проверки не обращаются к Telegram или TRMNL и не подтверждают физический экран. CI запускает эти же команды на Python 3.12 и 3.13.
+History starts with the first successful reading. Until enough samples exist, the chart shows `Collecting history` and changes show a dash. Changing the channel resets its history.
 
-## Тестирование в TRMNL
+## Limitations
 
-1. Импортировать ZIP как новый Private Plugin в облачном TRMNL.
-2. Проверить, что Serverless выбран как Python и код `transform.py` импортирован; при необходимости вставить файл во вкладку Serverless вручную.
-3. Указать адрес публичного канала и выполнить Force Refresh.
-4. Проверить реальные merge variables, сохранённое состояние и все четыре серверных рендера.
-5. Загрузить `icon.svg` в настройках Recipe и создать featured image.
+- The data source is Telegram's public channel page, not an official analytics API. Page changes or availability issues can interrupt updates.
+- Only public channels with an exact subscriber count are supported. Private channels, groups, personal accounts, and rounded counts are rejected.
+- Updates run when the device requests them, at most once an hour. Infrequent display or device sleep can leave gaps in the history.
+- Daily and weekly changes require a saved reading within two hours before the corresponding comparison time. Missing readings are not replaced with zero; the chart breaks across missing days.
+- History contains snapshots of the total count, not individual joins and departures. Storage is limited to about eight days of hourly readings and 30 days of daily readings.
+- Requires cloud TRMNL Serverless and Saved State. Terminus compatibility has not been tested.
 
-Подача через Publish plugin пока отложена. Будущая подача требует принятия условий лицензирования и ручной модерации TRMNL. Статус In Review означает подачу, а не завершённую публикацию.
+## Development
 
-## Ограничения
+See [CONTRIBUTING.md](https://github.com/lerston/trmnl-telegram-subscribers/blob/codex/standalone/CONTRIBUTING.md) for tests, previews, and contribution guidelines. Report bugs through [GitHub Issues](https://github.com/lerston/trmnl-telegram-subscribers/issues).
 
-- Публичный HTML Telegram является недокументированным источником и может измениться. Карточка может быть недоступна из отдельного региона или на сервере TRMNL.
-- Обновление запускается по запросу устройства, не чаще раза в час. Если плагин скрыт, устройство спит или редко показывает его, снимки будут реже. Это снимки общего числа, а не журнал каждого входа/выхода подписчика.
-- Изменение за сутки и неделю показывается только при наличии реального снимка не старше двух часов относительно нужной границы. Пропуски не заменяются нулями; линия графика разрывается при пропуске дня.
-- Saved State ограничен 8192 байтами; плагин сохраняет последние почасовые снимки за восемь дней и дневные точки за 30 дней. Это короткая история, а не долгосрочная база аналитики.
-- Текст HTML экранируется в шаблонах. Пользовательский адрес нормализуется до username; сетевой запрос всегда идёт только на `https://t.me/`.
-- Возможности Serverless и Saved State подтверждены документацией облачного TRMNL; совместимость с Terminus не заявлена.
-- Для витрины Recipe Master используется служебное значение поля канала `demo:telegram-subscribers`. Экран явно помечен как вымышленный; демо не обращается к Telegram и не сохраняет вымышленные точки в историю. Пользовательские установки должны содержать реальный адрес канала.
+## TRMNL documentation
 
-## Статус проверки
-
-- Локально: 15 тестов обработки данных проходят; ZIP и четыре сценария preview собираются. Результаты предыдущей проверки прототипа подтверждены 9 октября 2026 года; проверки самостоятельного репозитория выполняются в CI.
-- TRMNL: на прототипе проверены импорт ZIP, Python Serverless, чтение реального публичного канала, запись первой точки в Saved State и серверный PNG 9 октября 2026 года. Это не длительное наблюдение за историей. Часовой пояс использует IANA-зону либо переданный TRMNL UTC offset, если база IANA отсутствует в Python runtime.
-- Физическое e-ink устройство: не проверено.
-- Публичный каталог: не опубликован.
-- Подача в каталог требует принятия [условий лицензирования TRMNL](https://trmnl.com/plugin-license), включая CC BY 4.0 для дизайна, разбора данных и разметки.
-
-## Документация источников
-
-- [TRMNL Serverless](https://help.trmnl.com/en/articles/14130649-serverless)
-- [TRMNL Saved State](https://help.trmnl.com/en/articles/16777795-saved-state)
-- [Обновления по запросу устройства](https://help.trmnl.com/en/articles/15123293-on-demand-plugin-refresh)
-- [Демо для Recipe Master](https://help.trmnl.com/en/articles/12772238-demo-data-for-publishing-plugins)
-- [Публикация Recipes](https://help.trmnl.com/en/articles/10122094-plugin-recipes)
-- [Требования Recipes](https://help.trmnl.com/en/articles/11395668-recipe-best-practices)
-- [Формат импорта](https://help.trmnl.com/en/articles/10542599-importing-and-exporting-private-plugins)
+- [Importing and exporting Private Plugins](https://help.trmnl.com/en/articles/10542599-importing-and-exporting-private-plugins)
+- [Serverless](https://help.trmnl.com/en/articles/14130649-serverless)
+- [Saved State](https://help.trmnl.com/en/articles/16777795-saved-state)
+- [On-demand plugin refresh](https://help.trmnl.com/en/articles/15123293-on-demand-plugin-refresh)
