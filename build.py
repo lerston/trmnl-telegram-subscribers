@@ -41,12 +41,15 @@ def build():
     with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zipped:
         for name in FILES:
             zipped.writestr(name, (ROOT / name).read_bytes())
-    env = environment((ROOT / "shared.liquid").read_text(encoding="utf-8"))
+    shared = (ROOT / "shared.liquid").read_text(encoding="utf-8")
+    env = environment(shared)
+    import re
+    shared_styles = re.sub(r'{% template \w+ %}.*?{% endtemplate %}', '', shared, flags=re.DOTALL)
     data = mock_data()
     states = {"demo": data, "first-update": process({"trmnl": {"plugin_settings": {"custom_fields_values": {"channel": "example_channel"}}}}, lambda _: {"name": "Example Channel", "count": 12}, 1_790_064_000),
               "unavailable": process({"trmnl": {"plugin_settings": {"custom_fields_values": {"channel": "example_channel"}}}}, lambda _: (_ for _ in ()).throw(TimeoutError())),
               "large-channel": {**data, "channel_name": "A channel with a very long descriptive title for layout testing", "subscribers_display": "9,876,543"}}
-    styles = '<link rel="stylesheet" href="https://trmnl.com/css/3.4.0/plugins.css"><script src="https://trmnl.com/js/3.4.0/plugins.js"></script>'
+    styles = '<link rel="stylesheet" href="https://trmnl.com/css/3.4.0/plugins.css"><script src="https://trmnl.com/js/3.4.0/plugins.js"></script>' + shared_styles
     for scenario, variables in states.items():
         pieces = []
         for name, (width, height) in LAYOUTS.items():

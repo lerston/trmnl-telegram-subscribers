@@ -171,7 +171,8 @@ def delta(state, age):
 
 def chart(days):
     if len(days) < 2:
-        return {"segments": [], "points": [], "minimum": None, "maximum": None, "first_day": "", "last_day": ""}
+        return {"segments": [], "areas": [], "points": [], "span_days": 0,
+                "minimum": None, "maximum": None, "first_day": "", "last_day": ""}
     values = [p[2] for p in days]
     low, high = min(values), max(values)
     spread = max(high - low, 1)
@@ -188,16 +189,22 @@ def chart(days):
         points.append({"x": f"{x:.1f}", "y": f"{y:.1f}"})
         previous = date
     segments.append(" ".join(current))
-    return {"segments": segments, "points": points, "minimum": low, "maximum": high,
+    areas = [f'{part.split()[0].split(",")[0]},132 {part} {part.split()[-1].split(",")[0]},132'
+             for part in segments if len(part.split()) > 1]
+    span_days = (datetime.strptime(days[-1][0], "%Y-%m-%d") - datetime.strptime(days[0][0], "%Y-%m-%d")).days
+    return {"segments": segments, "areas": areas, "points": points, "span_days": span_days, "minimum": low, "maximum": high,
             "first_day": days[0][0], "last_day": days[-1][0]}
 
 
 def display(state, channel, zone, status, note=""):
     has_data = bool(state)
+    updated = datetime.fromtimestamp(state["last_at"], zone) if has_data else None
     result = {"channel": channel, "channel_name": state.get("name", "Telegram Subscribers"),
               "has_data": has_data, "status": status, "note": note,
               "subscribers": state.get("last_count"), "subscribers_display": f'{state["last_count"]:,}' if has_data else "—",
               "updated_display": datetime.fromtimestamp(state["last_at"], zone).strftime("%d %b %H:%M") if has_data else "",
+              "updated_date": updated.strftime("%d %b %Y") if updated else "",
+              "updated_time": updated.strftime("%H:%M") if updated else "",
               "timezone": str(zone), "history_days": len(state.get("days", [])),
               "chart": chart(state.get("days", [])), "trmnl_state": state}
     for label, age in (("day", DAY), ("week", 7 * DAY)):

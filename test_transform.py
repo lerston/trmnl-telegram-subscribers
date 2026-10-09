@@ -78,6 +78,9 @@ class TelegramCounterTests(unittest.TestCase):
         self.assertEqual(result["status"], "stale")
         self.assertEqual(result["trmnl_state"], state)
         self.assertEqual(result["subscribers"], 40)
+        initial = plugin.display(state, "example_channel", plugin.timezone.utc, "ok")
+        self.assertEqual((result["updated_date"], result["updated_time"]),
+                         (initial["updated_date"], initial["updated_time"]))
         self.assertNotIn("diagnostic", result["note"])
 
     def test_change_channel_never_reuses_old_history(self):
@@ -134,6 +137,20 @@ class TelegramCounterTests(unittest.TestCase):
         self.assertNotIn("nan", str(result))
         self.assertEqual(result["minimum"], result["maximum"])
         self.assertIn(",76.0", result["segments"][0])
+
+    def test_dithered_area_does_not_bridge_missing_days(self):
+        result = plugin.chart([["2026-01-01", BASE, 10], ["2026-01-02", BASE + plugin.DAY, 12],
+                               ["2026-01-05", BASE + 4 * plugin.DAY, 15]])
+        self.assertEqual(result["span_days"], 4)
+        self.assertEqual(len(result["segments"]), 2)
+        self.assertEqual(len(result["areas"]), 1)
+        self.assertNotIn(result["points"][-1]["x"], result["areas"][0])
+
+    def test_newspaper_timestamp_uses_user_timezone(self):
+        result = plugin.process(input_for(zone="Europe/Moscow"), lambda _: {"count": 12, "name": "Example"}, BASE)
+        expected = plugin.datetime.fromtimestamp(BASE, plugin.ZoneInfo("Europe/Moscow"))
+        self.assertEqual(result["updated_date"], expected.strftime("%d %b %Y"))
+        self.assertEqual(result["updated_time"], expected.strftime("%H:%M"))
 
 
 if __name__ == "__main__":
