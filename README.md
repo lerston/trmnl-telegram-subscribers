@@ -2,7 +2,7 @@
 
 Track a public Telegram channel's subscriber count and history on your TRMNL. Enter a channel username or `t.me` address. No bot, API key, Telegram login, or administrator access is required.
 
-**Status: experimental.** The plugin is being tested and is not available in the TRMNL catalog. Source code is currently on the [testing branch](https://github.com/lerston/trmnl-telegram-subscribers/tree/codex/standalone), in [draft PR #1](https://github.com/lerston/trmnl-telegram-subscribers/pull/1).
+**Status: experimental.** The plugin is being tested and is not available in the TRMNL catalog. Install it as a Private Plugin using the instructions below.
 
 ## Features
 
@@ -17,7 +17,7 @@ Track a public Telegram channel's subscriber count and history on your TRMNL. En
 Use Python 3.12 or 3.13 to build the import archive:
 
 ```sh
-git clone --branch codex/standalone https://github.com/lerston/trmnl-telegram-subscribers.git
+git clone https://github.com/lerston/trmnl-telegram-subscribers.git
 cd trmnl-telegram-subscribers
 python -m venv .venv
 ```
@@ -47,7 +47,7 @@ History starts with the first successful reading. Until enough samples exist, th
 
 ## Development
 
-See [CONTRIBUTING.md](https://github.com/lerston/trmnl-telegram-subscribers/blob/codex/standalone/CONTRIBUTING.md) for tests, previews, and contribution guidelines. Report bugs through [GitHub Issues](https://github.com/lerston/trmnl-telegram-subscribers/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for tests, previews, and contribution guidelines. Report bugs through [GitHub Issues](https://github.com/lerston/trmnl-telegram-subscribers/issues).
 
 ## TRMNL documentation
 

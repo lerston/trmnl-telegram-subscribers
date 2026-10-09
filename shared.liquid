@@ -1,0 +1,71 @@
+<style>
+.ts-paper{width:100%;height:100%;box-sizing:border-box;display:flex;flex-direction:column;color:#000;font-family:Georgia,"Times New Roman",serif;container-type:inline-size}
+.ts-paper *{box-sizing:border-box}
+.ts-header{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:4px 0 14px;border-bottom:4px double #000}
+.ts-identity{min-width:0;flex:1}
+.ts-title{display:block;margin:0;font-size:clamp(26px,6cqw,100px);font-weight:700;line-height:1.04;letter-spacing:-.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ts-handle{display:block;margin-top:6px;font-size:clamp(14px,2.5cqw,44px);line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts-date{flex:none;display:flex;flex-direction:column;gap:6px;align-items:flex-end;font-size:clamp(12px,2.15cqw,38px);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ts-date strong{font-size:1.35em;font-weight:700}
+.ts-metrics{display:grid;grid-template-columns:1.8fr 1fr 1fr;align-items:center;padding:20px 0;border-bottom:4px double #000;gap:0}
+.ts-count{min-width:0;font-size:clamp(48px,14cqw,260px);line-height:1;letter-spacing:-.055em;font-weight:700;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.ts-count--wide{font-size:clamp(38px,9.4cqw,180px)}
+.ts-delta{text-align:center;border-left:1px solid #000;padding:8px 10px}
+.ts-change{display:block;font-size:clamp(24px,7.3cqw,138px);line-height:1.05;font-weight:700;letter-spacing:-.04em;font-variant-numeric:lining-nums tabular-nums}
+.ts-period{display:block;margin-top:10px;font-size:clamp(10px,1.8cqw,30px);font-weight:700;letter-spacing:.16em;line-height:1.2;white-space:nowrap}
+.ts-note{font:14px/1.2 Arial,sans-serif;margin:8px 0 0}
+.ts-chart{flex:1;min-height:0;display:flex;flex-direction:column;padding-top:12px;gap:6px}
+.ts-chart-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:clamp(11px,1.9cqw,34px)}
+.ts-tag{background:#000;color:#fff;padding:4px 10px;font-weight:700;letter-spacing:.12em;line-height:1;white-space:nowrap}
+.ts-range{white-space:nowrap;font-variant-numeric:tabular-nums}
+.ts-plot{display:block;width:100%;flex:1;min-height:0;overflow:visible}
+.ts-chart-dates{display:flex;justify-content:space-between;font-size:clamp(11px,1.8cqw,30px);line-height:1;font-variant-numeric:tabular-nums}
+.ts-empty{flex:1;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,2.5cqw,44px);background-image:radial-gradient(#000 .5px,transparent .6px);background-size:4px 4px;background-position:bottom}
+.ts-empty span{background:#fff;padding:12px 20px}
+.ts-horizontal .ts-header{padding-bottom:10px}
+.ts-horizontal .ts-title{font-size:clamp(24px,4.6cqw,80px)}
+.ts-horizontal .ts-handle{font-size:clamp(12px,2cqw,34px)}
+.ts-horizontal .ts-metrics{flex:1;border-bottom:0;padding:12px 0 4px}
+.ts-horizontal .ts-count{font-size:clamp(42px,11cqw,200px)}
+.ts-horizontal .ts-count--wide{font-size:clamp(32px,9cqw,160px)}
+.ts-vertical .ts-header,.ts-quadrant .ts-header{gap:10px;padding-bottom:12px}
+.ts-vertical .ts-title,.ts-quadrant .ts-title{font-size:clamp(21px,7cqw,60px)}
+.ts-vertical .ts-handle,.ts-quadrant .ts-handle{font-size:clamp(11px,3.4cqw,32px)}
+.ts-vertical .ts-date,.ts-quadrant .ts-date{font-size:clamp(10px,3cqw,28px);gap:4px}
+.ts-vertical .ts-metrics{grid-template-columns:1fr 1fr;padding:18px 0;row-gap:18px}
+.ts-vertical .ts-count{grid-column:1/-1;font-size:clamp(46px,23cqw,180px)}
+.ts-vertical .ts-count--wide{font-size:clamp(38px,18cqw,144px)}
+.ts-vertical .ts-delta{padding:0 8px}
+.ts-vertical .ts-delta:nth-child(2){border-left:0;text-align:left;padding-left:0}
+.ts-vertical .ts-change{font-size:clamp(25px,11cqw,90px)}
+.ts-vertical .ts-period,.ts-quadrant .ts-period{font-size:clamp(10px,3cqw,26px)}
+.ts-vertical .ts-chart-heading,.ts-vertical .ts-chart-dates{font-size:clamp(10px,3cqw,26px)}
+.ts-quadrant .ts-metrics{grid-template-columns:2fr 1fr;flex:1;border-bottom:0;padding:12px 0 0}
+.ts-quadrant .ts-count{font-size:clamp(32px,19cqw,144px)}
+.ts-quadrant .ts-count--wide{font-size:clamp(28px,14cqw,110px)}
+.ts-quadrant .ts-change{font-size:clamp(24px,10cqw,78px)}
+</style>
+
+{% template subscribers_header %}
+<header class="ts-header">
+  <div class="ts-identity"><h1 class="ts-title">{{ channel_name | escape }}</h1><span class="ts-handle">{% if channel != blank %}@{{ channel | escape }}{% endif %}</span></div>
+  <div class="ts-date">{% if updated_date != blank %}<span>{{ updated_date | escape }}</span><strong>{{ updated_time | escape }}</strong>{% else %}<span>Awaiting</span><strong>data</strong>{% endif %}</div>
+</header>
+{% endtemplate %}
+{% template subscribers_chart %}
+<section class="ts-chart">
+  <div class="ts-chart-heading"><span class="ts-tag">{% if chart.span_days > 0 %}{{ chart.span_days }} DAYS{% else %}HISTORY{% endif %}</span>{% if chart.segments.size > 0 %}<span class="ts-range">{{ chart.minimum | number_with_delimiter }}–{{ chart.maximum | number_with_delimiter }}</span>{% endif %}</div>
+  {% if chart.segments.size > 0 %}
+  <svg class="ts-plot" viewBox="0 0 560 152" preserveAspectRatio="none" role="img" aria-label="Subscriber history">
+    <defs><pattern id="ts-dots" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".55" fill="black"/><circle cx="3" cy="3" r=".55" fill="black"/></pattern></defs>
+    {% for area in chart.areas %}<polygon points="{{ area }}" fill="url(#ts-dots)"/>{% endfor %}
+    <line x1="12" y1="20" x2="548" y2="20" stroke="black" stroke-width=".6" stroke-dasharray="1 6"/>
+    <line x1="12" y1="76" x2="548" y2="76" stroke="black" stroke-width=".6" stroke-dasharray="1 6"/>
+    <line x1="12" y1="132" x2="548" y2="132" stroke="black" stroke-width=".8"/>
+    {% for segment in chart.segments %}<polyline points="{{ segment }}" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>{% endfor %}
+    {% for point in chart.points %}{% if forloop.first or forloop.last %}<circle cx="{{ point.x }}" cy="{{ point.y }}" r="{% if forloop.last %}4{% else %}2.5{% endif %}" fill="black"/>{% endif %}{% endfor %}
+  </svg>
+  <div class="ts-chart-dates"><span>{{ chart.first_day | date: '%d %b' }}</span><span>{{ chart.last_day | date: '%d %b' }}</span></div>
+  {% else %}<div class="ts-empty"><span>{% if has_data %}Collecting history{% else %}Awaiting first reading{% endif %}</span></div>{% endif %}
+</section>
+{% endtemplate %}

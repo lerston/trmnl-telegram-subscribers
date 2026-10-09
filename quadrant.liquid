@@ -1,0 +1,8 @@
+<div class="layout layout--col layout--stretch"><div class="ts-paper ts-quadrant">
+  {% render "subscribers_header", channel_name: channel_name, channel: channel, updated_date: updated_date, updated_time: updated_time %}
+  <section class="ts-metrics">
+    <div class="ts-count {% if subscribers_display.size > 7 %}ts-count--wide{% endif %}">{{ subscribers_display }}</div>
+    <div class="ts-delta"><span class="ts-change">{{ delta_day_display }}</span><span class="ts-period">24 HOURS</span></div>
+  </section>
+  {% if status != 'ok' and status != 'demo' %}<p class="ts-note">{{ note | escape }}</p>{% endif %}
+</div></div>
